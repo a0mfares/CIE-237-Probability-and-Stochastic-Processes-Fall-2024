@@ -14,6 +14,8 @@ class FileProcessState extends Equatable {
   final String? variance;
   final String? secondMoment;
   final String? thirdMoment;
+  final String? mgfPrime;
+  final String? mgfDoublePrime;
   final String? error;
   final String? pdfImagePath;
   final String? cdfImagePath;
@@ -42,6 +44,8 @@ class FileProcessState extends Equatable {
     this.variance,
     this.secondMoment,
     this.thirdMoment,
+    this.mgfPrime,
+    this.mgfDoublePrime,
     this.error,
     this.pdfImagePath,
     this.cdfImagePath,
@@ -72,6 +76,8 @@ class FileProcessState extends Equatable {
     String? variance,
     String? secondMoment,
     String? thirdMoment,
+    String? mgfPrime,
+    String? mgfDoublePrime,
     String? error,
     String? pdfImagePath,
     String? cdfImagePath,
@@ -100,6 +106,8 @@ class FileProcessState extends Equatable {
         variance: variance ?? this.variance,
         secondMoment: secondMoment ?? this.secondMoment,
         thirdMoment: thirdMoment ?? this.thirdMoment,
+        mgfPrime: mgfPrime ?? this.mgfPrime,
+        mgfDoublePrime: mgfDoublePrime ?? this.mgfDoublePrime,
         error: error ?? this.error,
         pdfImagePath: pdfImagePath ?? this.pdfImagePath,
         cdfImagePath: cdfImagePath ?? this.cdfImagePath,
@@ -131,6 +139,8 @@ class FileProcessState extends Equatable {
         variance,
         secondMoment,
         thirdMoment,
+        mgfPrime,
+        mgfDoublePrime,
         error,
         pdfImagePath,
         cdfImagePath,
@@ -198,21 +208,26 @@ class FileProcessCubit extends Cubit<FileProcessState> {
             String variance = (data['Variance']?.toStringAsFixed(2)) ?? 'N/A';
             String thirdMoment =
                 (data['ThirdMoment']?.toStringAsFixed(2)) ?? 'N/A';
+            String mgfPrime = (data['MGF Prime']?.toStringAsFixed(2)) ?? 'N/A';
+            String mgfDoublePrime =
+                (data['MGF Double Prime']?.toStringAsFixed(2)) ?? 'N/A';
             final pdfImagePath =
                 await _downloadAndSaveImage(data['PDF'], 'pdf_image.png');
             final cdfImagePath =
                 await _downloadAndSaveImage(data['CDF'], 'cdf_image.png');
             final mgfImagePath =
-                await _downloadAndSaveImage(data['MGF'], 'mgf_plot.png');
+                await _downloadAndSaveImage(data['MGF URL'], 'mgf_plot.png');
             final mgfPrimeImagePath = await _downloadAndSaveImage(
-                data['MGF Prime'], 'mgf_prime_plot.png');
+                data['MGF Prime URL'], 'mgf_prime_plot.png');
             final mgfDoublePrimeImagePath = await _downloadAndSaveImage(
-                data['MGF Double Prime'], 'mgf_doubleprime_plot.png');
+                data['MGF Double Prime URL'], 'mgf_doubleprime_plot.png');
             emit(state.copyWith(
                 status: FileProcessStatus.completed,
                 mean: mean,
                 variance: variance,
                 thirdMoment: thirdMoment,
+                mgfPrime: mgfPrime,
+                mgfDoublePrime: mgfDoublePrime,
                 pdfImagePath: pdfImagePath,
                 cdfImagePath: cdfImagePath,
                 mgfImagePath: mgfImagePath,

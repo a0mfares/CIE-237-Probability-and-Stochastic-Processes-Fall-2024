@@ -9,11 +9,14 @@ classdef SingleRVAnalysis_Smooth
         sampleValues % Sample values for interpolating the PDF and CDF
         MGF % Moment Generating Function
         MGF_prime % First derivative of the MGF
+        MGF_Prime_0; % first derivative at t = 0
         MGF_doublePrime % Second derivative of the MGF
+        MGF_doublePrime_0; % Second derivative at t = 0
         Trange % Range for MGF computation
     end
 
     methods
+
         % Constructor: Initialize the object with the sample and number of bins
         function obj = SingleRVAnalysis_Smooth(sample, numBins, Trange)
             if nargin < 2
@@ -31,16 +34,53 @@ classdef SingleRVAnalysis_Smooth
         end
 
         % Method to compute PDF and CDF
+        % function obj = computePDFandCDF(obj, numBins)
+        % 
+            % [counts, edges] = histcounts(obj.Sample, numBins, 'Normalization', 'pdf');
+            % binCenters = edges(1:end-1) + diff(edges)/2;
+            % 
+            % obj.sampleValues = linspace(min(obj.Sample), max(obj.Sample), numBins);
+            % obj.PDF = interp1(binCenters, counts, obj.sampleValues, 'pchip', 0);
+            % obj.CDF = cumtrapz(obj.sampleValues, obj.PDF);
+            % obj.CDF = obj.CDF / max(obj.CDF);
+        % end
+
         function obj = computePDFandCDF(obj, numBins)
-            [counts, edges] = histcounts(obj.Sample, numBins, 'Normalization', 'pdf');
-            binCenters = edges(1:end-1) + diff(edges)/2;
-
-            obj.sampleValues = linspace(min(obj.Sample), max(obj.Sample), numBins);
-            obj.PDF = interp1(binCenters, counts, obj.sampleValues, 'pchip', 0);
-            obj.CDF = cumtrapz(obj.sampleValues, obj.PDF);
-            obj.CDF = obj.CDF / max(obj.CDF);
+            % Check if the data is discrete by analyzing unique values
+            uniqueVals = unique(obj.Sample);
+            isDiscrete = (length(uniqueVals) <= numBins/2) || ...
+                        all(mod(obj.Sample, 1) == 0);  % Check if all values are integers
+            
+            if isDiscrete
+                % For discrete data, use the unique values directly
+                [counts, edges] = histcounts(obj.Sample, 'BinMethod', 'integers', ...
+                                          'Normalization', 'probability');
+                binCenters = edges(1:end-1) + diff(edges)/2;
+                
+                % Store exact points for discrete values
+                obj.sampleValues = binCenters;
+                obj.PDF = counts;
+                
+                % Compute CDF
+                obj.CDF = cumsum(counts);
+            else
+                % For continuous data, use regular histcounts with smoothing
+                [counts, edges] = histcounts(obj.Sample, numBins, 'Normalization', 'pdf');
+                binCenters = edges(1:end-1) + diff(edges)/2;
+                
+                % Use shape-preserving piecewise cubic interpolation for continuous data
+                obj.sampleValues = linspace(min(obj.Sample), max(obj.Sample), numBins);
+                obj.PDF = interp1(binCenters, counts, obj.sampleValues, 'pchip', 0);
+                
+                % Normalize PDF
+                obj.PDF = obj.PDF / trapz(obj.sampleValues, obj.PDF);
+                
+                % Compute CDF using numerical integration
+                obj.CDF = cumtrapz(obj.sampleValues, obj.PDF);
+                obj.CDF = obj.CDF / max(obj.CDF);
+            end
         end
-
+        
         % Manual computation of mean, variance, and third moment
         function obj = computeStatistics(obj)
             n = length(obj.Sample);
@@ -74,14 +114,47 @@ classdef SingleRVAnalysis_Smooth
             obj.MGF = arrayfun(@(t) sum(binWidth * counts .* exp(t * binCenters)), tRange);
             obj.MGF_prime = arrayfun(@(t) sum(binWidth * counts .* binCenters .* exp(t * binCenters)), tRange);
             obj.MGF_doublePrime = arrayfun(@(t) sum(binWidth * counts .* (binCenters.^2) .* exp(t * binCenters)), tRange);
+
+            % compute the MGF' and MGF" at t = 0
+            obj.MGF_Prime_0 = sum(binWidth * counts .* binCenters);
+            obj.MGF_doublePrime_0 = sum(binWidth * counts .* (binCenters.^2));
         end
+
+        % Plotting methods
+        % function plotPDF(obj, axesHandle)
+        %     if nargin < 2
+        %         figure;
+        %         axesHandle = axes;
+        %     end
+        %     plot(axesHandle, obj.sampleValues, obj.PDF, 'LineWidth', 2);
+        % end
+
         function plotPDF(obj, filename)
             figureHandle = figure('Visible', 'off'); % Create a figure, but keep it hidden
             axesHandle = axes('Parent', figureHandle); % Create axes within the hidden figure
             
-            % Plot the PDF on the axes
-            plot(axesHandle, obj.sampleValues, obj.PDF, 'LineWidth', 2);
+            % Check if data is discrete
+            uniqueVals = unique(obj.Sample);
+            isDiscrete = (length(uniqueVals) <= length(obj.sampleValues)/2) || ...
+                        all(mod(obj.Sample, 1) == 0);
             
+            if isDiscrete
+                % For discrete data, use stairs plot with points
+                stairs(axesHandle, obj.sampleValues, obj.PDF, 'r-', 'LineWidth', 2);
+                hold(axesHandle, 'on');
+                plot(axesHandle, obj.sampleValues, obj.PDF, 'ro', 'MarkerFaceColor', 'r');
+                hold(axesHandle, 'off');
+                title(axesHandle, 'Probability Mass Function');
+            else
+                % For continuous data, use line plot
+                plot(axesHandle, obj.sampleValues, obj.PDF, 'LineWidth', 2);
+                title(axesHandle, 'Probability Density Function');
+            end
+            
+            xlabel(axesHandle, 'Value');
+            ylabel(axesHandle, 'Probability');
+            grid(axesHandle, 'on');
+
             % Save the plot to a file if a filename is provided
             if nargin == 2
                 saveas(figureHandle, filename); 
@@ -90,7 +163,8 @@ classdef SingleRVAnalysis_Smooth
             % Close the figure after saving
             close(figureHandle);
         end
-        
+
+
         function plotCDF(obj, filename)
             figureHandle = figure('Visible', 'off'); % Create a figure, but keep it hidden
             axesHandle = axes('Parent', figureHandle); % Create axes within the hidden figure
@@ -163,5 +237,6 @@ classdef SingleRVAnalysis_Smooth
             % Close the figure
             close(figureHandle);
         end
+
     end
 end

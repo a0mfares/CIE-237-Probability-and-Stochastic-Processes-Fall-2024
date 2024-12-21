@@ -81,7 +81,9 @@ def upload_file():
         mean = eng.getfield(obj,"Mean")
         variance = eng.getfield(obj,"Variance")
         third_moment = eng.getfield(obj,"ThirdMoment")
-
+        # Compute MGF, MGF' and MGF''
+        mgf_prime = eng.getfield(obj,"MGF_Prime_0")
+        mgf_double_prime = eng.getfield(obj,"MGF_doublePrime_0")
         # creating local storage for plots
         pdf_filename = os.path.join(app.config['UPLOAD_FOLDER'], "pdf_plot.png")
         cdf_filename = os.path.join(app.config['UPLOAD_FOLDER'], "cdf_plot.png")
@@ -114,9 +116,11 @@ def upload_file():
             "ThirdMoment": third_moment,
             "PDF": pdf_url,
             "CDF":cdf_url,
-            "MGF": mgf_url,
-            "MGF Prime": mgf_prime_url,
-            "MGF Double Prime":mgf_doublePrime_url
+            "MGF Prime": mgf_prime,
+            "MGF Double Prime":mgf_double_prime,
+            "MGF URL": mgf_url,
+            "MGF Prime URL": mgf_prime_url,
+            "MGF Double Prime URL":mgf_doublePrime_url
         }
     if index == 1:
         # Initialize JointRVAnalysis class with the sample data, Number of Bins

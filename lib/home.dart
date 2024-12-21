@@ -88,6 +88,8 @@ class Home extends StatelessWidget {
                           final mean = state.mean;
                           final variance = state.variance;
                           final thirdMoment = state.thirdMoment;
+                          final mgfPrime = state.mgfPrime;
+                          final mgfDoublePrime = state.mgfDoublePrime;
                           final pdfImage = state.pdfImagePath;
                           final cdfImage = state.cdfImagePath;
                           final mgfImage = state.mgfImagePath;
@@ -132,6 +134,8 @@ class Home extends StatelessWidget {
                                           mean!,
                                           variance!,
                                           thirdMoment!,
+                                          mgfPrime!,
+                                          mgfDoublePrime!,
                                           pdfImage!,
                                           cdfImage!,
                                           mgfImage!,
@@ -141,6 +145,8 @@ class Home extends StatelessWidget {
                                           mean!,
                                           variance!,
                                           thirdMoment!,
+                                          mgfPrime!,
+                                          mgfDoublePrime!,
                                           pdfImage!,
                                           cdfImage!,
                                           mgfImage!,
@@ -229,6 +235,8 @@ class Home extends StatelessWidget {
                                           varianceX,
                                           meanY,
                                           varianceY,
+                                          corr,
+                                          cov,
                                           plot2d,
                                           plot3d,
                                           marginalX,
@@ -322,7 +330,7 @@ class Home extends StatelessWidget {
                                     FileProcessStatus.completed) ...[
                                   Platform.isWindows
                                       ? section3(meanX, meanZ, meanY, meanW,
-                                          zDist, wDist, joint)
+                                          corr, cov, zDist, wDist, joint)
                                       : section3Mobile(
                                           meanX,
                                           meanZ,
@@ -472,6 +480,8 @@ Widget section1(
     String mean,
     String variance,
     String thirdMoment,
+    String mgfPrime,
+    String mgfDoublePrime,
     String pdfImagePath,
     String cdfImagePath,
     String mgfImagePath,
@@ -632,6 +642,118 @@ Widget section1(
                     ),
                     Text(
                       "Third Moment : $thirdMoment",
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 20, 20, 20),
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            GlassmorphicContainer(
+              width: 710,
+              height: 100,
+              borderRadius: 20,
+              blur: 20,
+              alignment: Alignment.bottomCenter,
+              border: 2,
+              linearGradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    const Color.fromARGB(255, 0, 0, 0).withOpacity(0.1),
+                    const Color.fromARGB(255, 0, 0, 0).withOpacity(0.05),
+                  ],
+                  stops: const [
+                    0.1,
+                    1,
+                  ]),
+              borderGradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color.fromARGB(255, 3, 3, 3).withOpacity(0.5),
+                  const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
+                ],
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Image.file(
+                      File("Assets\\Images\\MGF.png"),
+                      width: 50,
+                      height: 50,
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "MGF'(0) : $mgfPrime",
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 20, 20, 20),
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            GlassmorphicContainer(
+              width: 700,
+              height: 100,
+              borderRadius: 20,
+              blur: 20,
+              alignment: Alignment.bottomCenter,
+              border: 2,
+              linearGradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    const Color.fromARGB(255, 0, 0, 0).withOpacity(0.1),
+                    const Color.fromARGB(255, 0, 0, 0).withOpacity(0.05),
+                  ],
+                  stops: const [
+                    0.1,
+                    1,
+                  ]),
+              borderGradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color.fromARGB(255, 3, 3, 3).withOpacity(0.5),
+                  const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
+                ],
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Image.file(
+                      File("Assets\\Images\\MGF.png"),
+                      width: 50,
+                      height: 50,
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "MGF''(0) : $mgfDoublePrime",
                       style: const TextStyle(
                           color: Color.fromARGB(255, 20, 20, 20),
                           fontSize: 30,
@@ -903,6 +1025,8 @@ Widget section1Mobile(
     String mean,
     String variance,
     String thirdMoment,
+    String mgfPrime,
+    String mgfDoublePrime,
     String pdfImagePath,
     String cdfImagePath,
     String mgfImagePath,
@@ -1070,6 +1194,116 @@ Widget section1Mobile(
                 ),
                 Text(
                   "Third Moment : $thirdMoment",
+                  style: const TextStyle(
+                      color: Color.fromARGB(255, 20, 20, 20),
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        GlassmorphicContainer(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height * 0.1,
+          borderRadius: 20,
+          blur: 20,
+          alignment: Alignment.bottomCenter,
+          border: 2,
+          linearGradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color.fromARGB(255, 0, 0, 0).withOpacity(0.1),
+                const Color.fromARGB(255, 0, 0, 0).withOpacity(0.05),
+              ],
+              stops: const [
+                0.1,
+                1,
+              ]),
+          borderGradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color.fromARGB(255, 3, 3, 3).withOpacity(0.5),
+              const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
+            ],
+          ),
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  width: 20,
+                ),
+                Image.asset(
+                  'Assets\\Images\\MGF.png',
+                  width: MediaQuery.of(context).size.width * 0.1,
+                  height: MediaQuery.of(context).size.width * 0.1,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  "MGF'(0) : $mgfPrime",
+                  style: const TextStyle(
+                      color: Color.fromARGB(255, 20, 20, 20),
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        GlassmorphicContainer(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height * 0.1,
+          borderRadius: 20,
+          blur: 20,
+          alignment: Alignment.bottomCenter,
+          border: 2,
+          linearGradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color.fromARGB(255, 0, 0, 0).withOpacity(0.1),
+                const Color.fromARGB(255, 0, 0, 0).withOpacity(0.05),
+              ],
+              stops: const [
+                0.1,
+                1,
+              ]),
+          borderGradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color.fromARGB(255, 3, 3, 3).withOpacity(0.5),
+              const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
+            ],
+          ),
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  width: 20,
+                ),
+                Image.asset(
+                  'Assets\\Images\\monitor.png',
+                  width: MediaQuery.of(context).size.width * 0.1,
+                  height: MediaQuery.of(context).size.width * 0.1,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  "MGF''(0) : $mgfDoublePrime",
                   style: const TextStyle(
                       color: Color.fromARGB(255, 20, 20, 20),
                       fontSize: 20,
@@ -1339,6 +1573,8 @@ Widget section2(
   String varianceX,
   String meanY,
   String varianceY,
+  String correlation,
+  String covariance,
   String plot2dImagePath,
   String plot3dImagePath,
   String mariginalXImagePath,
@@ -1538,6 +1774,118 @@ Widget section2(
                     ],
                   ),
                 ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            GlassmorphicContainer(
+              width: 710,
+              height: 100,
+              borderRadius: 20,
+              blur: 20,
+              alignment: Alignment.bottomCenter,
+              border: 2,
+              linearGradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    const Color.fromARGB(255, 0, 0, 0).withOpacity(0.1),
+                    const Color.fromARGB(255, 0, 0, 0).withOpacity(0.05),
+                  ],
+                  stops: const [
+                    0.1,
+                    1,
+                  ]),
+              borderGradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color.fromARGB(255, 3, 3, 3).withOpacity(0.5),
+                  const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
+                ],
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Image.file(
+                      File("Assets\\Images\\covariance.png"),
+                      width: 50,
+                      height: 50,
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "Covariance : $covariance",
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 20, 20, 20),
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            GlassmorphicContainer(
+              width: 700,
+              height: 100,
+              borderRadius: 20,
+              blur: 20,
+              alignment: Alignment.bottomCenter,
+              border: 2,
+              linearGradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    const Color.fromARGB(255, 0, 0, 0).withOpacity(0.1),
+                    const Color.fromARGB(255, 0, 0, 0).withOpacity(0.05),
+                  ],
+                  stops: const [
+                    0.1,
+                    1,
+                  ]),
+              borderGradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color.fromARGB(255, 3, 3, 3).withOpacity(0.5),
+                  const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
+                ],
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Image.file(
+                      File("Assets\\Images\\correlation.png"),
+                      width: 50,
+                      height: 50,
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "Correlation : $correlation",
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 20, 20, 20),
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
               ),
             ),
           ],
@@ -2260,6 +2608,8 @@ Widget section3(
   String meanZ,
   String meanY,
   String meanW,
+  String correlation,
+  String covariance,
   String zDistPath,
   String wDistPath,
   String jointPath,
@@ -2438,6 +2788,118 @@ Widget section3(
                         )
                       ],
                     ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            GlassmorphicContainer(
+              width: 710,
+              height: 100,
+              borderRadius: 20,
+              blur: 20,
+              alignment: Alignment.bottomCenter,
+              border: 2,
+              linearGradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    const Color.fromARGB(255, 0, 0, 0).withOpacity(0.1),
+                    const Color.fromARGB(255, 0, 0, 0).withOpacity(0.05),
+                  ],
+                  stops: const [
+                    0.1,
+                    1,
+                  ]),
+              borderGradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color.fromARGB(255, 3, 3, 3).withOpacity(0.5),
+                  const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
+                ],
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Image.file(
+                      File("Assets\\Images\\covariance.png"),
+                      width: 50,
+                      height: 50,
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "Covariance : $covariance",
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 20, 20, 20),
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            GlassmorphicContainer(
+              width: 700,
+              height: 100,
+              borderRadius: 20,
+              blur: 20,
+              alignment: Alignment.bottomCenter,
+              border: 2,
+              linearGradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    const Color.fromARGB(255, 0, 0, 0).withOpacity(0.1),
+                    const Color.fromARGB(255, 0, 0, 0).withOpacity(0.05),
+                  ],
+                  stops: const [
+                    0.1,
+                    1,
+                  ]),
+              borderGradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color.fromARGB(255, 3, 3, 3).withOpacity(0.5),
+                  const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
+                ],
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Image.file(
+                      File("Assets\\Images\\correlation.png"),
+                      width: 50,
+                      height: 50,
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "Correlation : $correlation",
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 20, 20, 20),
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold),
+                    )
                   ],
                 ),
               ),
