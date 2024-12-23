@@ -1,16 +1,11 @@
-# prop
+# CIE 237: Probability and Stochastic Processes Fall 2024
+----
+A Flutter project that bridges MATLAB with Flutter using a Flask server and MATLAB engine API and this server is tunneled by Ngrok.
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Requirements
+1. licensed MATLAB software.
+2. installing requirements.txt in Python Server => `pip install -r requirements.txt`.
+3. changinge ==serverBaseUrl== in **lib\bloc\File Uploader\fileprocesscubit.dart** to your local host or to your Ngrok endpoint.
+4. if using Ngrok change the ==ngrok_url== in **Python server\app.py** to your endpoint if not just delete the ==start_ngrok== function.
+----
+## Python Server 
