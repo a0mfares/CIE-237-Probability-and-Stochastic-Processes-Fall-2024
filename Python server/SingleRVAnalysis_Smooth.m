@@ -129,114 +129,111 @@ classdef SingleRVAnalysis_Smooth
         %     plot(axesHandle, obj.sampleValues, obj.PDF, 'LineWidth', 2);
         % end
 
-        function plotPDF(obj, filename)
-            figureHandle = figure('Visible', 'off'); % Create a figure, but keep it hidden
-            axesHandle = axes('Parent', figureHandle); % Create axes within the hidden figure
-            
+        function plotPDF(obj, filename, customTitle)
             % Check if data is discrete
             uniqueVals = unique(obj.Sample);
-            isDiscrete = (length(uniqueVals) <= length(obj.sampleValues)/2) || ...
+            isDiscrete = (length(uniqueVals) <= length(obj.sampleValues) / 2) || ...
                         all(mod(obj.Sample, 1) == 0);
-            
+
+            figure('Visible', 'off'); % Create invisible figure
+            axesHandle = axes;
+
             if isDiscrete
-                % For discrete data, use stairs plot with points
-                stairs(axesHandle, obj.sampleValues, obj.PDF, 'r-', 'LineWidth', 2);
-                hold(axesHandle, 'on');
-                plot(axesHandle, obj.sampleValues, obj.PDF, 'ro', 'MarkerFaceColor', 'r');
-                hold(axesHandle, 'off');
-                title(axesHandle, 'Probability Mass Function');
+                % For discrete data, use stem plot to show impulses
+                stem(axesHandle, obj.sampleValues, obj.PDF, 'r', 'LineWidth', 2, 'MarkerFaceColor', 'r');
+                defaultTitle = 'Probability Mass Function';
             else
                 % For continuous data, use line plot
                 plot(axesHandle, obj.sampleValues, obj.PDF, 'LineWidth', 2);
-                title(axesHandle, 'Probability Density Function');
+                defaultTitle = 'Probability Density Function';
             end
-            
+
+            % Apply custom title if provided
+            if nargin > 2 && ~isempty(customTitle)
+                title(axesHandle, customTitle);
+            else
+                title(axesHandle, defaultTitle);
+            end
+
             xlabel(axesHandle, 'Value');
             ylabel(axesHandle, 'Probability');
             grid(axesHandle, 'on');
 
-            % Save the plot to a file if a filename is provided
-            if nargin == 2
-                saveas(figureHandle, filename); 
-            end
-            
-            % Close the figure after saving
-            close(figureHandle);
+            saveas(gcf, filename); % Save the plot
+            close(gcf); % Close the figure
         end
 
 
         function plotCDF(obj, filename)
-            figureHandle = figure('Visible', 'off'); % Create a figure, but keep it hidden
-            axesHandle = axes('Parent', figureHandle); % Create axes within the hidden figure
+            figure('Visible', 'off'); % Create invisible figure
+            axesHandle = axes;
+
             plot(axesHandle, obj.sampleValues, obj.CDF, '-', 'LineWidth', 1.5);
-            
-            % Save the plot to a file if a filename is provided
-            if nargin == 2
-                saveas(figureHandle, filename);
-            end
-            
-            % Close the figure
-            close(figureHandle);
+            xlabel(axesHandle, 'Value');
+            ylabel(axesHandle, 'Cumulative Probability');
+            title(axesHandle, 'Cumulative Distribution Function');
+            grid(axesHandle, 'on');
+
+            saveas(gcf, filename); % Save the plot
+            close(gcf); % Close the figure
         end
+
         function obj = setTrange(obj, t_max)
-            obj.Trange = linspace(-1, t_max); 
+            obj.Trange = linspace(-1, t_max, 100); % Set 100 points by default
         end
+
         function plotMGF(obj, filename)
             if isempty(obj.MGF)
                 error('MGF is empty. Ensure Trange is set and computeMGF is called before plotting.');
             end
-        
-            figureHandle = figure('Visible', 'off'); 
-            axesHandle = axes('Parent', figureHandle); 
-        
+
+            figure('Visible', 'off'); % Create invisible figure
+            axesHandle = axes;
+
             plot(axesHandle, obj.Trange, obj.MGF, 'b', 'LineWidth', 2);
-            
-            % Save the plot to a file if a filename is provided
-            if nargin == 2
-                saveas(figureHandle, filename);
-            end
-            
-            % Close the figure
-            close(figureHandle);
+            xlabel(axesHandle, 't');
+            ylabel(axesHandle, 'MGF(t)');
+            title(axesHandle, 'Moment Generating Function');
+            grid(axesHandle, 'on');
+
+            saveas(gcf, filename); % Save the plot
+            close(gcf); % Close the figure
         end
 
         function plotMGF_prime(obj, filename)
             if isempty(obj.MGF_prime)
                 error('MGF_prime has not been computed. Call computeMGF first.');
             end
-        
-            figureHandle = figure('Visible', 'off'); % Create a figure, but keep it hidden
-            axesHandle = axes('Parent', figureHandle); % Create axes within the hidden figure
-        
-            plot(axesHandle, obj.Trange, obj.MGF_prime, 'r-', 'LineWidth', 2);
-            
-            % Save the plot to a file if a filename is provided
-            if nargin == 2
-                saveas(figureHandle, filename);
-            end
-            
-            % Close the figure
-            close(figureHandle);
+
+            figure('Visible', 'off'); % Create invisible figure
+            axesHandle = axes;
+
+            plot(axesHandle, obj.Trange, obj.MGF_prime, 'r--', 'LineWidth', 2);
+            xlabel(axesHandle, 't');
+            ylabel(axesHandle, 'MGF''(t)');
+            title(axesHandle, 'First Derivative of Moment Generating Function');
+            grid(axesHandle, 'on');
+
+            saveas(gcf, filename); % Save the plot
+            close(gcf); % Close the figure
         end
 
         function plotMGF_doublePrime(obj, filename)
             if isempty(obj.MGF_doublePrime)
                 error('MGF_doublePrime has not been computed. Call computeMGF first.');
             end
-        
-            figureHandle = figure('Visible', 'off'); % Create a figure, but keep it hidden
-            axesHandle = axes('Parent', figureHandle); % Create axes within the hidden figure
-        
-            plot(axesHandle, obj.Trange, obj.MGF_doublePrime, 'g-', 'LineWidth', 2);
-            
-            % Save the plot to a file if a filename is provided
-            if nargin == 2
-                saveas(figureHandle, filename);
-            end
-            
-            % Close the figure
-            close(figureHandle);
-        end
 
+            figure('Visible', 'off'); % Create invisible figure
+            axesHandle = axes;
+
+            plot(axesHandle, obj.Trange, obj.MGF_doublePrime, 'g-', 'LineWidth', 2);
+            xlabel(axesHandle, 't');
+            ylabel(axesHandle, 'MGF''''(t)');
+            title(axesHandle, 'Second Derivative of Moment Generating Function');
+            grid(axesHandle, 'on');
+
+            saveas(gcf, filename); % Save the plot
+            close(gcf); % Close the figure
+        end
     end
 end

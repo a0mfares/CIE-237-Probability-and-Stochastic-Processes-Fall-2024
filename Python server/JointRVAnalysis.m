@@ -24,8 +24,8 @@ classdef JointRVAnalysis
             obj.numBins = numBins; % Assign number of bins
         
             % Initialize analysis_X and analysis_Y
-            obj.analysis_X = SingleRVAnalysis_Smooth(obj.X, obj.numBins,1);
-            obj.analysis_Y = SingleRVAnalysis_Smooth(obj.Y, obj.numBins,1);
+            obj.analysis_X = SingleRVAnalysis_Smooth(obj.X, obj.numBins, 5);
+            obj.analysis_Y = SingleRVAnalysis_Smooth(obj.Y, obj.numBins, 5);
         
             % Debugging: Check if these are objects
             if ~isa(obj.analysis_X, 'SingleRVAnalysis_Smooth') || ~isa(obj.analysis_Y, 'SingleRVAnalysis_Smooth')
@@ -36,6 +36,10 @@ classdef JointRVAnalysis
 
         % function to display mean and variance
         function [meanValue, varianceValue] = calculateStatistics_X(obj)
+            % Debugging output
+            disp('Checking analysis_X...');
+            disp(obj.analysis_X);
+        
             % Ensure obj.analysis_X is a valid SingleRVAnalysis object
             if ~isa(obj.analysis_X, 'SingleRVAnalysis_Smooth')
                 error('analysis_X is not a valid SingleRVAnalysis object.');
@@ -58,33 +62,27 @@ classdef JointRVAnalysis
 
         % Plot 2D Joint Distribution
         function plot_2d_distribution(obj, filename)
-            % Create hidden figure and axes
-            figureHandle = figure('Visible', 'off'); 
-            axesHandle = axes('Parent', figureHandle); 
-            
             edgesX = linspace(min(obj.X), max(obj.X), obj.numBins);
             edgesY = linspace(min(obj.Y), max(obj.Y), obj.numBins);
             jointHist = histcounts2(obj.X, obj.Y, edgesX, edgesY, 'Normalization', 'probability');
             
-            % Plot on the hidden axes
+            figure('Visible', 'off'); % Create an invisible figure
+            axesHandle = axes;
+
+            % Plot on the specified axes
             imagesc(axesHandle, edgesX, edgesY, jointHist');
             colorbar(axesHandle);
             title(axesHandle, '2D Joint Distribution (Heatmap)');
             xlabel(axesHandle, 'X');
             ylabel(axesHandle, 'Y');
             axesHandle.YDir = 'normal'; % Ensure correct axis orientation
-        
-            % Save and close the figure
-            saveas(figureHandle, filename);
-            close(figureHandle);
+
+            saveas(gcf, filename); % Save the plot
+            close(gcf); % Close the figure
         end
-        
+
         % Plot 3D Joint Distribution
         function plot_3d_distribution(obj, filename)
-            % Create hidden figure and axes
-            figureHandle = figure('Visible', 'off');
-            axesHandle = axes('Parent', figureHandle);
-            
             edgesX = linspace(min(obj.X), max(obj.X), obj.numBins);
             edgesY = linspace(min(obj.Y), max(obj.Y), obj.numBins);
             [jointHist, ~, ~] = histcounts2(obj.X, obj.Y, edgesX, edgesY, 'Normalization', 'probability');
@@ -93,7 +91,10 @@ classdef JointRVAnalysis
             binCentersY = edgesY(1:end-1) + diff(edgesY) / 2;
             [XGrid, YGrid] = meshgrid(binCentersX, binCentersY);
             
-            % Plot the surface on the hidden axes
+            figure('Visible', 'off'); % Create an invisible figure
+            axesHandle = axes;
+
+            % Plot the surface on the specified axes
             surf(axesHandle, XGrid, YGrid, jointHist', 'EdgeColor', 'none');
             colorbar(axesHandle);
             title(axesHandle, '3D Joint Distribution (Surface Plot)');
@@ -101,59 +102,25 @@ classdef JointRVAnalysis
             ylabel(axesHandle, 'Y');
             zlabel(axesHandle, 'Probability');
             shading(axesHandle, 'interp');
-        
-            % Save and close the figure
-            saveas(figureHandle, filename);
-            close(figureHandle);
+
+            saveas(gcf, filename); % Save the plot
+            close(gcf); % Close the figure
         end
-        
+
         % Plot Marginal Distribution of X
         function plot_mariginal_X(obj, filename)
-            % Create hidden figure and axes
-            figureHandle = figure('Visible', 'off');
-            axesHandle = axes('Parent', figureHandle);
-        
-            % Compute PDF for X
-            edgesX = linspace(min(obj.X), max(obj.X), obj.numBins);
-            marginalX = histcounts(obj.X, edgesX, 'Normalization', 'probability');
-            binCentersX = edgesX(1:end-1) + diff(edgesX) / 2;
-        
-            % Interpolate to smooth the distribution
-            smoothX = linspace(min(binCentersX), max(binCentersX), 1000);
-            smoothY = interp1(binCentersX, marginalX, smoothX, 'pchip');
-        
-            % Plot the marginal distribution as a smooth curve
-            plot(axesHandle, smoothX, smoothY, 'LineWidth', 2, 'Color', 'b');
-            title(axesHandle, 'Marginal Distribution of X');
-            xlabel(axesHandle, 'X');
-            ylabel(axesHandle, 'Probability');
-            grid(axesHandle, 'on');
-        
-            % Save and close the figure
-            saveas(figureHandle, filename);
-            close(figureHandle);
+             obj.analysis_X.plotPDF(filename,"Marginal Distribution of X");
         end
-        
+
         % Plot Marginal Distribution of Y
         function plot_mariginal_Y(obj, filename)
-            % Create hidden figure and axes
-            figureHandle = figure('Visible', 'off');
-            axesHandle = axes('Parent', figureHandle);
-        
-            % Use ksdensity to estimate the PDF
-            [densityY, valuesY] = ksdensity(obj.Y);
-        
-            % Plot the marginal distribution as a smooth curve
-            plot(axesHandle, valuesY, densityY, 'LineWidth', 2, 'Color', 'r');
-            title(axesHandle, 'Marginal Distribution of Y');
-            xlabel(axesHandle, 'Y');
-            ylabel(axesHandle, 'Density');
-            grid(axesHandle, 'on');
-        
-            % Save and close the figure
-            saveas(figureHandle, filename);
-            close(figureHandle);
+            % Call plotPDF to create the plot and save it
+            obj.analysis_Y.plotPDF(filename,"Marginal Distribution of Y");
         end
+
+
+
+        % Calculate Covariance Manually
         function covarianceXY = calculate_covariance(obj)
             x = obj.X - mean(obj.X);
             y = obj.Y - mean(obj.Y);
