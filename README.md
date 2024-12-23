@@ -1,8 +1,6 @@
 # CIE 237: Probability and Stochastic Processes Fall 2024
-----
 A Flutter project that bridges MATLAB with Flutter using a Flask server and MATLAB engine API and this server is tunneled by Ngrok.
 
-----
 ## Key Features
 
 1. **File Upload**: Users select and upload `.mat` files.
@@ -16,7 +14,6 @@ A Flutter project that bridges MATLAB with Flutter using a Flask server and MATL
    - Moment Generating Function (MGF) and its derivatives plots
    - Distribution plots (2D/3D, marginal, joint, etc.)
 4. **Dynamic Inputs**: Prompts users for additional parameters based on the selected analysis.
-----
 ## Technologies Used
 ### Frontend
 - **Flutter**: Framework for building the mobile application.
@@ -27,7 +24,6 @@ A Flutter project that bridges MATLAB with Flutter using a Flask server and MATL
 - **Flask**: Python-based backend server.
 - **MATLAB Engine API for Python**: Executes MATLAB commands and interacts with `.mat` files.
 - **Ngrok**: Exposes the local Flask server to the internet.
-----
 ## Supported Operations
 
 ### 1. Single Variable Analysis
@@ -48,7 +44,6 @@ A Flutter project that bridges MATLAB with Flutter using a Flask server and MATL
   - Means, Covariance, Correlation
   - Distribution and Joint Plots
 
-----
 ## Prerequisites
 - MATLAB installed on the server machine.
 - Flask server set up with the provided `app.py`.
