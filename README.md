@@ -1,4 +1,4 @@
-CIE 237: Probability and Stochastic Processes Fall 2024
+***CIE 237: Probability and Stochastic Processes Fall 2024***
 
 A project that bridges MATLAB with Flutter using a Flask server and MATLAB Engine API. Additionally, the project includes a standalone MATLAB desktop application for direct analysis and visualization.
 
